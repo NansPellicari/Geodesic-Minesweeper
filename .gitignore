@@ -7,6 +7,9 @@ Content/StarterContent
 !.vscode/*.sample.json
 /*.code-workspace
 
+# Rider
+.idea/
+
 # Compiled Object files
 *.slo
 *.lo
