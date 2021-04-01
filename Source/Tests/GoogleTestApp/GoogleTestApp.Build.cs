@@ -20,11 +20,12 @@ namespace UnrealBuildTool.Rules
 		{
 			bEnableExceptions = true;
 			PrivateDependencyModuleNames.AddRange(
-				new string[]
+				new[]
 				{
 					"Core",
 					"GoogleTest",
 					"NansCoreHelpers",
+					"MinesweeperLibCore"
 				}
 			);
 			PrivatePCHHeaderFile = "Private/GoogleTestApp.h";

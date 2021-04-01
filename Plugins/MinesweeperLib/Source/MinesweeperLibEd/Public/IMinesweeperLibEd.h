@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,9 +9,8 @@
  * The public interface to this module.  In most cases, this interface is only public to sibling modules 
  * within this plugin.
  */
-class IMinesweeperLib : public IModuleInterface
+class IMinesweeperLibEd : public IModuleInterface
 {
-
 public:
 
 	/**
@@ -22,9 +19,9 @@ public:
 	 *
 	 * @return Returns singleton instance, loading the module on demand if needed
 	 */
-	static inline IMinesweeperLib& Get()
+	static IMinesweeperLibEd& Get()
 	{
-		return FModuleManager::LoadModuleChecked< IMinesweeperLib >( "MinesweeperLib" );
+		return FModuleManager::LoadModuleChecked<IMinesweeperLibEd>("MinesweeperLibEd");
 	}
 
 	/**
@@ -32,9 +29,8 @@ public:
 	 *
 	 * @return True if the module is loaded and ready to use
 	 */
-	static inline bool IsAvailable()
+	static bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded( "MinesweeperLib" );
+		return FModuleManager::Get().IsModuleLoaded("MinesweeperLibEd");
 	}
 };
-

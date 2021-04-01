@@ -2,11 +2,11 @@
 	"FileVersion" : 3,
 	"Version" : 1,
 	"VersionName" : "1.0",
-	"FriendlyName" : "Blank Example Plugin",
-	"Description" : "An example of a minimal plugin.  This can be used as a starting point when creating your own plugin.",
+	"FriendlyName" : "Minesweeper Lib",
+	"Description" : "A project to test my skills",
 	"Category" : "Examples",
-	"CreatedBy" : "Epic Games, Inc.",
-	"CreatedByURL" : "http://epicgames.com",
+	"CreatedBy" : "Nans Pellicari",
+	"CreatedByURL" : "https://github.com/NansPellicari",
 	"DocsURL" : "",
 	"MarketplaceURL" : "",
 	"SupportURL" : "",
@@ -17,9 +17,19 @@
 	"Modules" :
 	[
 		{
-			"Name" : "MinesweeperLib",
+			"Name" : "MinesweeperLibCore",
 			"Type" : "Runtime",
 			"LoadingPhase" : "Default"
+		},
+		{
+			"Name" : "MinesweeperLibUE4",
+			"Type" : "Runtime",
+			"LoadingPhase" : "Default"
+		},
+		{
+			"Name" : "MinesweeperLibEd",
+			"Type" : "Runtime",
+			"LoadingPhase" : "PostEngineInit"
 		}
 	]
 }
