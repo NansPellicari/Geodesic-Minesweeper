@@ -9,8 +9,28 @@ namespace UnrealBuildTool.Rules
 			PublicDependencyModuleNames.AddRange(
 				new[]
 				{
-					"Core"
-					// ... add other public dependencies that you statically link with here ...
+					"Core",
+					"CoreUObject",
+					"Engine",
+					"InputCore",
+					"MainFrame",
+					"AssetTools",
+					"AppFramework",
+					"PropertyEditor",
+					"RHI",
+					"RenderCore",
+					"Projects"
+					// "MinesweeperLibCore",
+					// "MinesweeperLibUE4"
+				}
+			);
+			PrivateDependencyModuleNames.AddRange(
+				new[]
+				{
+					"UnrealEd",
+					"Slate",
+					"SlateCore",
+					"EditorStyle"
 				}
 			);
 		}

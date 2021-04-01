@@ -31,5 +31,11 @@
 			"Type" : "Runtime",
 			"LoadingPhase" : "PostEngineInit"
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "NansCoreHelpers",
+			"Enabled": true
+		}
 	]
 }
