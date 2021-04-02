@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+
+#include "Grid.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 
@@ -17,12 +19,13 @@ SLATE_BEGIN_ARGS(SMineSweeperGrid) : _Rows(32), _Columns(32) {}
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
+	static FLinearColor GetCellColor(const int32 BombsNumber);
 	void ChangeGrid(const FVector2D& InSize);
 	void Refresh();
 	FReply OnReplayClicked();
+	FGridData GridData;
 private:
 	TSharedPtr<SUniformGridPanel> Grid;
-	uint32 Rows;
-	uint32 Columns;
 	FReply HandleButtonClicked(uint32 Position);
+	bool bGameIsOver = false;
 };

@@ -13,7 +13,9 @@ namespace UnrealBuildTool.Rules
 					"Slate",
 					"SlateCore",
 					"InputCore",
-					"NansCoreHelpers"
+					"EditorStyle",
+					"NansCoreHelpers",
+					"MinesweeperLibCore"
 					// ... add other public dependencies that you statically link with here ...
 				}
 			);

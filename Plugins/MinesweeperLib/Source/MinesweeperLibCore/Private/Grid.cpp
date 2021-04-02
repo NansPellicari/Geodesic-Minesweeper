@@ -43,18 +43,15 @@ void FGridData::AddSlot(int32 Row, FGridSlot Slot)
 	Data[Row].Add(Slot);
 }
 
-void NGrid::Build(FGridData& Grid)
+void NGrid::Build(FGridData& Grid, int32 BombsAmount)
 {
 	Grid.Data.Empty();
 	TArray<int32> Bombs;
 	const int32 MaxCells = Grid.Num();
-	int32 BombsAmount = Grid.BombsAmount;
 
-	// If bombs amount has not been override
-	if (BombsAmount == -1)
-	{
-		BombsAmount = MaxCells / 6.4f;
-	}
+	BombsAmount = BombsAmount == -1 ? MaxCells / 6.4f : BombsAmount;
+	BombsAmount = FMath::Max<int32>(BombsAmount, 1);
+	Grid.BombsAmount = BombsAmount;
 
 	// Create bombs positions
 	for (int32 BombIndex = 0; BombIndex < BombsAmount; ++BombIndex)
