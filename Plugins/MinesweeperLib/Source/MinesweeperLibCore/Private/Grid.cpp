@@ -71,6 +71,18 @@ int32 FGridData::GetSlotIndex(const int32& Row, const int32& Col) const
 	return Idx;
 }
 
+uint32 FGridData::GetDiscovered() const
+{
+	uint32 DiscoveredSlots = 0;
+	for (int32 Row = 0; Row < Data.Num(); ++Row)
+	{
+		for (int32 Col = 0; Col < Data[Row].Num(); ++Col)
+		{
+			DiscoveredSlots += Data[Row][Col].bIsFound ? 1 : 0;
+		}
+	}
+	return DiscoveredSlots;
+}
 
 void FGridData::SlotFoundAt(uint32 Position)
 {
@@ -93,7 +105,7 @@ void FGridData::SlotFoundAt(uint32 Position)
 		FVector2D(Row + 1, Col),
 	};
 
-	for (int32 Neighbour = 0; Neighbour < 4; ++Neighbour)
+	for (uint32 Neighbour = 0; Neighbour < 4; ++Neighbour)
 	{
 		int32 GridRow = CrossGrid[Neighbour].X;
 		int32 GridCol = CrossGrid[Neighbour].Y;

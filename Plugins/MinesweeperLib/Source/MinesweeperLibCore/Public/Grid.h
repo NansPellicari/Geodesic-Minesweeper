@@ -34,6 +34,7 @@ struct MINESWEEPERLIBCORE_API FGridData
 	void SlotFoundAt(uint32 Position);
 	bool IsInValidRange(const int32& Row, const int32& Col) const;
 	int32 GetSlotIndex(const int32& Row, const int32& Col) const;
+	uint32 GetDiscovered() const;
 };
 
 /**

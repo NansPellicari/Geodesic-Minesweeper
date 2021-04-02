@@ -1,6 +1,5 @@
 ﻿#include "UI/SMineSweeperGrid.h"
 
-
 #include "EditorFontGlyphs.h"
 #include "EditorStyleSet.h"
 #include "Grid.h"
@@ -12,6 +11,21 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void SMineSweeperGrid::Construct(const FArguments& InArgs)
 {
+	TMap<EGameStatus, FText> GameOverTexts = {
+		{EGameStatus::Fail, LOCTEXT("GameOverFailedText", "Oooh you've exploded...")},
+		{EGameStatus::Success, LOCTEXT("GameOverSuccessText", "Congratulations!!! The grid is safe!")},
+	};
+
+	TMap<EGameStatus, FText> GameOverIcons = {
+		{EGameStatus::Fail, FEditorFontGlyphs::Frown_O},
+		{EGameStatus::Success, FEditorFontGlyphs::Smile_O},
+	};
+
+	TMap<EGameStatus, FLinearColor> GameOverColors = {
+		{EGameStatus::Fail, FLinearColor::Red},
+		{EGameStatus::Success, FLinearColor::Green},
+	};
+
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -83,10 +97,10 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 		[
 			SNew(SBorder)
 			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
-			.BorderBackgroundColor(FLinearColor::Red)
+			.BorderBackgroundColor_Lambda([this, GameOverColors] { return GameOverColors[GameStatus]; })
 			.ForegroundColor(FLinearColor::White)
 			.Padding(10.f)
-			.Visibility_Lambda([this] { return bGameIsOver ? EVisibility::Visible : EVisibility::Collapsed; })
+			.Visibility_Lambda([this] { return GameIsOver() ? EVisibility::Visible : EVisibility::Collapsed; })
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
@@ -95,14 +109,14 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 					SNew(STextBlock)
 					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.18"))
 					.TextStyle(FEditorStyle::Get(), "NormalText.Important")
-					.Text(FEditorFontGlyphs::Frown_O)
+					.Text_Lambda([this, GameOverIcons] { return GameOverIcons[GameStatus]; })
 				]
 				+ SHorizontalBox::Slot()
 				  .HAlign(HAlign_Center).VAlign(VAlign_Center).AutoWidth()
 				  .Padding(5.f, 0)
 				[
 					SNew(STextBlock)
-					.Text(LOCTEXT("GameOverText", "Oooh you've exploded..."))
+					.Text_Lambda([this, GameOverTexts] { return GameOverTexts[GameStatus]; })
 				]
 			]
 		]
@@ -114,7 +128,7 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 
 void SMineSweeperGrid::ChangeGrid(const FVector2D& InSize)
 {
-	bGameIsOver = false;
+	GameStatus = EGameStatus::Running;
 	Grid->ClearChildren();
 
 	GridData.Rows = InSize.Y;
@@ -143,7 +157,7 @@ void SMineSweeperGrid::ChangeGrid(const FVector2D& InSize)
 				SNew(SBox)
 				.WidthOverride(25.f)
 				.HeightOverride(25.f)
-				.IsEnabled_Lambda([this]() { return !bGameIsOver; })
+				.IsEnabled_Lambda([this]() { return !GameIsOver(); })
 				[
 					SNew(SButton)
 					.ForegroundColor(GetCellColor(Slot.AsideBombsNumber))
@@ -182,7 +196,7 @@ EVisibility SMineSweeperGrid::HandleButtonDetailsVisibility(uint32 Position) con
 {
 	if (bCheatMode) return EVisibility::Visible;
 	const FGridSlot Slot = GridData.GetSlot(Position);
-	if (bGameIsOver && Slot.bIsBomb) return EVisibility::Visible;
+	if (GameIsOver() && Slot.bIsBomb) return EVisibility::Visible;
 	if (Slot.bIsFound) return EVisibility::Visible;
 	return EVisibility::Hidden;
 }
@@ -199,18 +213,28 @@ FReply SMineSweeperGrid::OnCheatModeClicked()
 	return FReply::Handled();
 }
 
+inline bool SMineSweeperGrid::GameIsOver() const
+{
+	return GameStatus == EGameStatus::Fail || GameStatus == EGameStatus::Success;
+}
+
 FReply SMineSweeperGrid::HandleButtonClicked(uint32 Position)
 {
 	FGridSlot& Slot = GridData.GetSlot(Position);
 	if (Slot.bIsBomb)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s You've clicked on a bomb!!!"), ANSI_TO_TCHAR(__FUNCTION__));
-		bGameIsOver = true;
+		GameStatus = EGameStatus::Fail;
 	}
 	else
 	{
 		GridData.SlotFoundAt(Position);
+		if (GridData.Num() - GridData.GetDiscovered() == GridData.BombsAmount)
+		{
+			GameStatus = EGameStatus::Success;
+		}
 	}
+
 	return FReply::Handled();
 }
 

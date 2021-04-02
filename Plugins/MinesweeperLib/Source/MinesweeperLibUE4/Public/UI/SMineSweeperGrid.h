@@ -6,6 +6,13 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 
+enum class EGameStatus : uint8
+{
+	Fail,
+	Success,
+	Running,
+};
+
 /**
  * 
  */
@@ -22,9 +29,10 @@ SLATE_BEGIN_ARGS(SMineSweeperGrid) : _Rows(32), _Columns(32) {}
 	void ChangeGrid(const FVector2D& InSize);
 	void Refresh();
 	static FLinearColor GetCellColor(const int32 BombsNumber);
+	bool GameIsOver() const;
 
 private:
-	bool bGameIsOver = false;
+	EGameStatus GameStatus = EGameStatus::Running;
 	bool bCheatMode = false;
 	TSharedPtr<SUniformGridPanel> Grid;
 	FGridData GridData;
