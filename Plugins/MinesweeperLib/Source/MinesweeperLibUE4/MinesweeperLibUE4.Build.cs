@@ -9,7 +9,11 @@ namespace UnrealBuildTool.Rules
 			PublicDependencyModuleNames.AddRange(
 				new[]
 				{
-					"Core"
+					"Core",
+					"Slate",
+					"SlateCore",
+					"InputCore",
+					"NansCoreHelpers"
 					// ... add other public dependencies that you statically link with here ...
 				}
 			);
