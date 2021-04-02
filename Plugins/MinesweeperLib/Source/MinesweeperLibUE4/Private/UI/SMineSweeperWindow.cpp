@@ -16,66 +16,70 @@ void SMineSweeperWindow::Construct(const FArguments& InArgs)
 {
 	ChildSlot
 	[
-		SNew(SVerticalBox)
-		+ SVerticalBox::Slot() // The buttons row
-		  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(5.f)
+		SNew(SScrollBox)
+		.Orientation(Orient_Vertical)
+		+ SScrollBox::Slot()
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot() // The buttons row
+			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(5.f)
 			[
-				SNew(SButton)
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+				[
+					SNew(SButton)
 				  .Text(LOCTEXT("ButtonBeginnerLabel", "Beginner"))
 				  .ForegroundColor(FLinearColor::White)
 				  .ButtonColorAndOpacity(FLinearColor::Blue)
-				  .OnClicked(this, &SMineSweeperWindow::OnBeginnerClicked)
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
-			[
-				SNew(SButton)
+				  .OnClicked(this, &SMineSweeperWindow::OnLevelClicked, FMinesweeperGridSize::Beginner)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+				[
+					SNew(SButton)
 				  .Text(LOCTEXT("ButtonAdvancedLabel", "Advanced"))
 				  .ForegroundColor(FLinearColor::Black)
 				  .ButtonColorAndOpacity(FLinearColor::Green)
-				  .OnClicked(this, &SMineSweeperWindow::OnAdvancedClicked)
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
-			[
-				SNew(SButton)
+				  .OnClicked(this, &SMineSweeperWindow::OnLevelClicked, FMinesweeperGridSize::Advanced)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+				[
+					SNew(SButton)
 				  .Text(LOCTEXT("ButtonExpertLabel", "Expert"))
 				  .ForegroundColor(FLinearColor::White)
 				  .ButtonColorAndOpacity(FLinearColor::Red)
-				  .OnClicked(this, &SMineSweeperWindow::OnExpertClicked)
+				  .OnClicked(this, &SMineSweeperWindow::OnLevelClicked, FMinesweeperGridSize::Expert)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center)
+				  .VAlign(VAlign_Top)
+				  .AutoWidth()
+				[
+					SNew(SButton)
+					  .Text(LOCTEXT("ButtonCustomLabel", "Custom"))
+					  .OnClicked(this, &SMineSweeperWindow::OnCustomClicked)
+				]
 			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center)
-			  .VAlign(VAlign_Top)
-			  .AutoWidth()
+			+ SVerticalBox::Slot() // The optional custom field (width, height)
+			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(5.f)
 			[
-				SNew(SButton)
-            .Text(LOCTEXT("ButtonCustomLabel", "Custom"))
-            .OnClicked(this, &SMineSweeperWindow::OnCustomClicked)
-			]
-		]
-		+ SVerticalBox::Slot() // The optional custom field (width, height)
-		  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(5.f)
-		[
-			SNew(SHorizontalBox)
-			// Only make this slot visible when user click on the button "custom"
-			.Visibility_Lambda([this] { return bIsCustom ? EVisibility::Visible : EVisibility::Collapsed; })
-			+ SHorizontalBox::Slot() // Width Field
-			  .HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()
-			[
-				SNew(STextBlock)
+				SNew(SHorizontalBox)
+				// Only make this slot visible when user click on the button "custom"
+				.Visibility_Lambda([this] { return bIsCustom ? EVisibility::Visible : EVisibility::Collapsed; })
+				+ SHorizontalBox::Slot() // Width Field
+				  .HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()
+				[
+					SNew(STextBlock)
 				.Text(LOCTEXT("GridWidthLabel", "Width"))
 				.Margin(FMargin(5.f, 0))
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Left)
-			  .VAlign(VAlign_Center)
-			[
-				SNew(SNumericEntryBox<int32>)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Left)
+				  .VAlign(VAlign_Center)
+				[
+					SNew(SNumericEntryBox<int32>)
 				  .MinDesiredValueWidth(75)
 				  .MinValue(4)
 				  .MaxValue(32)
@@ -83,19 +87,19 @@ void SMineSweeperWindow::Construct(const FArguments& InArgs)
 				  .MaxSliderValue(32)
 				  .Value(this, &SMineSweeperWindow::OnGetPreviewWidthValue)
 				  .OnValueCommitted(this, &SMineSweeperWindow::WidthChanged)
-			]
-			+ SHorizontalBox::Slot() // Height Field
-			  .HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()
-			[
-				SNew(STextBlock)
+				]
+				+ SHorizontalBox::Slot() // Height Field
+				  .HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()
+				[
+					SNew(STextBlock)
 				  .Text(LOCTEXT("GridHeightLabel", "Height"))
 				  .Margin(FMargin(5.f, 0))
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Left)
-			  .VAlign(VAlign_Center)
-			[
-				SNew(SNumericEntryBox<int32>)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Left)
+				  .VAlign(VAlign_Center)
+				[
+					SNew(SNumericEntryBox<int32>)
 				  .MinDesiredValueWidth(75)
 				  .MinValue(4)
 				  .MaxValue(32)
@@ -103,36 +107,27 @@ void SMineSweeperWindow::Construct(const FArguments& InArgs)
 				  .MaxSliderValue(32)
 				  .Value(this, &SMineSweeperWindow::OnGetPreviewHeightValue)
 				  .OnValueCommitted(this, &SMineSweeperWindow::HeightChanged)
+				]
+			]
+			+ SVerticalBox::Slot() // The grid
+			  .HAlign(HAlign_Center).VAlign(VAlign_Top)
+			[
+				SAssignNew(Grid, SMineSweeperGrid)
+			.Rows(FMinesweeperGridSize::Beginner.X)
+			.Columns(FMinesweeperGridSize::Beginner.Y)
 			]
 		]
-		+ SVerticalBox::Slot() // The grid
-		  .HAlign(HAlign_Center).VAlign(VAlign_Top)
-		[
-			SAssignNew(Grid, SMineSweeperGrid)
-		]
+
 	];
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-FReply SMineSweeperWindow::OnBeginnerClicked()
-{
-	bIsCustom = false;
-	ChangeGridConfig(FMinesweeperGridSize::Beginner);
-	return FReply::Handled();
-}
 
-FReply SMineSweeperWindow::OnExpertClicked()
+FReply SMineSweeperWindow::OnLevelClicked(const FVector2D GridSize)
 {
 	bIsCustom = false;
-	ChangeGridConfig(FMinesweeperGridSize::Expert);
-	return FReply::Handled();
-}
-
-FReply SMineSweeperWindow::OnAdvancedClicked()
-{
-	bIsCustom = false;
-	ChangeGridConfig(FMinesweeperGridSize::Advanced);
+	ChangeGridConfig(GridSize);
 	return FReply::Handled();
 }
 
@@ -141,6 +136,7 @@ FReply SMineSweeperWindow::OnCustomClicked()
 	bIsCustom = true;
 	return FReply::Handled();
 }
+
 
 void SMineSweeperWindow::ChangeGridConfig(const FVector2D& GridSize)
 {

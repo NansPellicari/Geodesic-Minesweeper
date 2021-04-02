@@ -23,13 +23,11 @@ SLATE_BEGIN_ARGS(SMineSweeperWindow) {}
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-	FReply OnBeginnerClicked();
-	FReply OnExpertClicked();
-	FReply OnAdvancedClicked();
-	FReply OnCustomClicked();
 
 protected:
-	FVector2D ChosenConfig;
+	FReply OnLevelClicked(const FVector2D GridSize);
+	FReply OnCustomClicked();
+
 	void ChangeGridConfig(const FVector2D& GridSize);
 	void WidthChanged(int32 NewValue, ETextCommit::Type);
 	void HeightChanged(int32 NewValue, ETextCommit::Type);
@@ -38,5 +36,6 @@ protected:
 	bool bIsCustom = false;
 
 private:
+	FVector2D ChosenConfig;
 	TSharedPtr<SMineSweeperGrid> Grid;
 };

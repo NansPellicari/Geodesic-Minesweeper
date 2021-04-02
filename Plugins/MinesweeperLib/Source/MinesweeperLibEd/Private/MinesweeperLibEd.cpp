@@ -66,7 +66,7 @@ void FMinesweeperLibEd::MyButton_Clicked()
 {
 	const TSharedRef<SWindow> MineSweeperWindow = SNew(SWindow)
 		.Title(FText::FromString(TEXT("MineSweeper Window")))
-		.ClientSize(FVector2D(800, 400))
+		.ClientSize(FVector2D(850, 850))
 		.SupportsMaximize(false)
 		.SupportsMinimize(false);
 
