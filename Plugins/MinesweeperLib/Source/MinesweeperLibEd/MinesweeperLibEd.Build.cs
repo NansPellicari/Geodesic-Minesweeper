@@ -19,9 +19,9 @@ namespace UnrealBuildTool.Rules
 					"PropertyEditor",
 					"RHI",
 					"RenderCore",
-					"Projects"
-					// "MinesweeperLibCore",
-					// "MinesweeperLibUE4"
+					"Projects",
+					"MinesweeperLibCore",
+					"MinesweeperLibUE4"
 				}
 			);
 			PrivateDependencyModuleNames.AddRange(

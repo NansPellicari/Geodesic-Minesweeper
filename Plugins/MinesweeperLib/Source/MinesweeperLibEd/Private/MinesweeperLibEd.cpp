@@ -6,6 +6,7 @@
 #include "Framework/MultiBox/MultiBoxExtender.h"
 #include "Interfaces/IMainFrameModule.h"
 #include "Modules/ModuleManager.h"
+#include "UI/SMineSweeperWindow.h"
 
 class FMinesweeperLibEd : public IMinesweeperLibEd
 {
@@ -16,7 +17,7 @@ class FMinesweeperLibEd : public IMinesweeperLibEd
 	TSharedPtr<FExtender> ToolbarExtender;
 	TSharedPtr<const FExtensionBase> Extension;
 
-	void MyButton_Clicked() const;
+	void MyButton_Clicked();
 	void AddToolbarExtension(FToolBarBuilder& Builder) const;
 };
 
@@ -61,7 +62,7 @@ void FMinesweeperLibEd::ShutdownModule()
 	FMinesweeperLibEditorStyle::Shutdown();
 }
 
-void FMinesweeperLibEd::MyButton_Clicked() const
+void FMinesweeperLibEd::MyButton_Clicked()
 {
 	const TSharedRef<SWindow> MineSweeperWindow = SNew(SWindow)
 		.Title(FText::FromString(TEXT("MineSweeper Window")))
@@ -70,46 +71,7 @@ void FMinesweeperLibEd::MyButton_Clicked() const
 		.SupportsMinimize(false);
 
 	MineSweeperWindow->SetContent(
-		SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		  .HAlign(HAlign_Center)
-		  .VAlign(VAlign_Top)
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center)
-			  .VAlign(VAlign_Top)
-			  .AutoWidth()
-			[
-				SNew(SButton)
-				.Text(FText::FromString(TEXT("Beginer")))
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center)
-			  .VAlign(VAlign_Top)
-			  .AutoWidth()
-			[
-				SNew(SButton)
-				.Text(FText::FromString(TEXT("Advanced")))
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center)
-			  .VAlign(VAlign_Top)
-			  .AutoWidth()
-			[
-				SNew(SButton)
-				.Text(FText::FromString(TEXT("Expert")))
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center)
-			  .VAlign(VAlign_Top)
-			  .AutoWidth()
-			[
-				SNew(SButton)
-				.Text(FText::FromString(TEXT("Custom")))
-			]
-		]
-		+ SVerticalBox::Slot()
+		SNew(SMineSweeperWindow)
 	);
 
 	IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(TEXT("MainFrame"));

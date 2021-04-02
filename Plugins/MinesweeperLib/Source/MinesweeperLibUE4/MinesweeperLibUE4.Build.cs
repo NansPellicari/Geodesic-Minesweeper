@@ -10,6 +10,9 @@ namespace UnrealBuildTool.Rules
 				new[]
 				{
 					"Core",
+					"Slate",
+					"SlateCore",
+					"InputCore",
 					"NansCoreHelpers"
 					// ... add other public dependencies that you statically link with here ...
 				}
