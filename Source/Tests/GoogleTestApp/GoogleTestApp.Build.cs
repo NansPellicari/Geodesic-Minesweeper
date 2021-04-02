@@ -19,6 +19,7 @@ namespace UnrealBuildTool.Rules
 		public GoogleTestApp(ReadOnlyTargetRules Target) : base(Target)
 		{
 			bEnableExceptions = true;
+
 			PrivateDependencyModuleNames.AddRange(
 				new[]
 				{
