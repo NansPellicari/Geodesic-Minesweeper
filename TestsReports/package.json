@@ -34,7 +34,7 @@
         "xunit-viewer": "^6.2.1"
     },
     "devDependencies": {
-        "cross-env": "^7.0.2",
+        "cross-env": "^7.0.3",
         "jest": "^25.5.3",
         "jest-when": "^2.7.1"
     }

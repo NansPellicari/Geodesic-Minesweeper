@@ -17,33 +17,53 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight()
+		  .Padding(0.f, 10.f)
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center).VAlign(VAlign_Center).AutoWidth()
-			  .Padding(5.f, 0.f)
+			SNew(SBorder)
+			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
+			.BorderBackgroundColor(FLinearColor::White)
+			.ForegroundColor(FLinearColor::Black)
+			.Padding(10.f)
 			[
-				SNew(STextBlock)
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Center).AutoWidth()
+				  .Padding(5.f, 0.f)
+				[
+					SNew(STextBlock)
 				.Font(FEditorStyle::Get().GetFontStyle("NormalFont"))
 				.Text_Lambda(
-									[this]()
-									{
-										return FText::Format(
-											LOCTEXT("BombsNumberLabel", "Bombs: {0}"),
-											GridData.BombsAmount
-										);
-									}
-								)
-			]
-			+ SHorizontalBox::Slot()
-			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
-			[
-				SNew(SButton)
+										[this]()
+										{
+											return FText::Format(
+												LOCTEXT("BombsNumberLabel", "Bombs: {0}"),
+												GridData.BombsAmount
+											);
+										}
+									)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+				[
+					SNew(SButton)
 				  .Text(LOCTEXT("ReplayLabel", "Replay"))
 				  .ForegroundColor(FLinearColor::Black)
 				  .ButtonColorAndOpacity(FLinearColor::Green)
 				  .OnClicked(this, &SMineSweeperGrid::OnReplayClicked)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoWidth()
+				[
+					SNew(SButton)
+				  .Text(LOCTEXT("CheatModeLabel", "Cheat Mode"))
+				  .ForegroundColor(FLinearColor::Black)
+				  .ButtonColorAndOpacity_Lambda(
+									 [this]() { return !bCheatMode ? FLinearColor::Gray : FLinearColor::Yellow; }
+								 )
+				  .OnClicked(this, &SMineSweeperGrid::OnCheatModeClicked)
+				]
 			]
+
 		]
 		+ SVerticalBox::Slot()
 		  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight()
@@ -58,6 +78,34 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 				  .MinDesiredSlotWidth(5.f)
 			]
 		]
+		+ SVerticalBox::Slot()
+		  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(10.f)
+		[
+			SNew(SBorder)
+			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
+			.BorderBackgroundColor(FLinearColor::Red)
+			.ForegroundColor(FLinearColor::White)
+			.Padding(10.f)
+			.Visibility_Lambda([this] { return bGameIsOver ? EVisibility::Visible : EVisibility::Collapsed; })
+			[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Center).AutoWidth()
+				[
+					SNew(STextBlock)
+					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.18"))
+					.TextStyle(FEditorStyle::Get(), "NormalText.Important")
+					.Text(FEditorFontGlyphs::Frown_O)
+				]
+				+ SHorizontalBox::Slot()
+				  .HAlign(HAlign_Center).VAlign(VAlign_Center).AutoWidth()
+				  .Padding(5.f, 0)
+				[
+					SNew(STextBlock)
+					.Text(LOCTEXT("GameOverText", "Oooh you've exploded..."))
+				]
+			]
+		]
 	];
 
 	GridData = FGridData();
@@ -66,6 +114,7 @@ void SMineSweeperGrid::Construct(const FArguments& InArgs)
 
 void SMineSweeperGrid::ChangeGrid(const FVector2D& InSize)
 {
+	bGameIsOver = false;
 	Grid->ClearChildren();
 
 	GridData.Rows = InSize.Y;
@@ -87,7 +136,7 @@ void SMineSweeperGrid::ChangeGrid(const FVector2D& InSize)
 
 			FSlateFontInfo Font = Slot.bIsBomb
 									  ? FEditorStyle::Get().GetFontStyle("FontAwesome.11")
-									  : FEditorStyle::Get().GetFontStyle("NormalFont");
+									  : FCoreStyle::GetDefaultFontStyle("Bold", 11);
 
 			Grid->AddSlot(Col, Row)
 			[
@@ -98,12 +147,14 @@ void SMineSweeperGrid::ChangeGrid(const FVector2D& InSize)
 				[
 					SNew(SButton)
 					.ForegroundColor(GetCellColor(Slot.AsideBombsNumber))
+					.IsEnabled_Raw(this, &SMineSweeperGrid::IsButtonEnable, Position)
 					.OnClicked(this, &SMineSweeperGrid::HandleButtonClicked, Position)
-					.ToolTipText(LOCTEXT("GridSlotButtonTooltip", "Are you suuuure?"))
+					.ToolTipText(FText::Format(LOCTEXT("GridSlotButtonTooltip", "Are you suuuure? {0}"), Position))
 					.ContentPadding(2.f)
 					.HAlign(HAlign_Center)
 					[
 						SNew(STextBlock)
+						.Visibility_Raw(this, &SMineSweeperGrid::HandleButtonDetailsVisibility, Position)
 						.Font(Font)
 						.Text(Text)
 					]
@@ -118,26 +169,47 @@ END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void SMineSweeperGrid::Refresh()
 {
-	bGameIsOver = false;
-	UE_LOG(LogTemp, Log, TEXT("%s Refresh"), ANSI_TO_TCHAR(__FUNCTION__));
 	ChangeGrid(FVector2D(GridData.Columns, GridData.Rows));
 }
 
 FReply SMineSweeperGrid::OnReplayClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s Replay"), ANSI_TO_TCHAR(__FUNCTION__));
 	Refresh();
+	return FReply::Handled();
+}
+
+EVisibility SMineSweeperGrid::HandleButtonDetailsVisibility(uint32 Position) const
+{
+	if (bCheatMode) return EVisibility::Visible;
+	const FGridSlot Slot = GridData.GetSlot(Position);
+	if (bGameIsOver && Slot.bIsBomb) return EVisibility::Visible;
+	if (Slot.bIsFound) return EVisibility::Visible;
+	return EVisibility::Hidden;
+}
+
+bool SMineSweeperGrid::IsButtonEnable(uint32 Position) const
+{
+	const FGridSlot Slot = GridData.GetSlot(Position);
+	return !Slot.bIsFound;
+}
+
+FReply SMineSweeperGrid::OnCheatModeClicked()
+{
+	bCheatMode = !bCheatMode;
 	return FReply::Handled();
 }
 
 FReply SMineSweeperGrid::HandleButtonClicked(uint32 Position)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s clicked on %i"), ANSI_TO_TCHAR(__FUNCTION__), Position);
-	FGridSlot Slot = GridData.GetSlot(Position);
+	FGridSlot& Slot = GridData.GetSlot(Position);
 	if (Slot.bIsBomb)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s You've clicked on a bomb!!!"), ANSI_TO_TCHAR(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s You've clicked on a bomb!!!"), ANSI_TO_TCHAR(__FUNCTION__));
 		bGameIsOver = true;
+	}
+	else
+	{
+		GridData.SlotFoundAt(Position);
 	}
 	return FReply::Handled();
 }
@@ -151,13 +223,13 @@ FLinearColor SMineSweeperGrid::GetCellColor(const int32 BombsNumber)
 			Color = FLinearColor::Blue;
 			break;
 		case 2:
-			Color = FColor::FromHex("1aa101");
+			Color = FColor::FromHex("00851f");
 			break;
 		case 4:
 			Color = FColor::FromHex("a40019");
 			break;
 		case 5:
-			Color = FColor::FromHex("a40019");
+			Color = FColor::FromHex("912400");
 			break;
 		case 6:
 			Color = FColor::FromHex("bd2f00");

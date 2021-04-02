@@ -19,13 +19,19 @@ SLATE_BEGIN_ARGS(SMineSweeperGrid) : _Rows(32), _Columns(32) {}
 
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
-	static FLinearColor GetCellColor(const int32 BombsNumber);
 	void ChangeGrid(const FVector2D& InSize);
 	void Refresh();
-	FReply OnReplayClicked();
-	FGridData GridData;
+	static FLinearColor GetCellColor(const int32 BombsNumber);
+
 private:
-	TSharedPtr<SUniformGridPanel> Grid;
-	FReply HandleButtonClicked(uint32 Position);
 	bool bGameIsOver = false;
+	bool bCheatMode = false;
+	TSharedPtr<SUniformGridPanel> Grid;
+	FGridData GridData;
+
+	FReply OnReplayClicked();
+	EVisibility HandleButtonDetailsVisibility(uint32 Position) const;
+	bool IsButtonEnable(uint32 Position) const;
+	FReply OnCheatModeClicked();
+	FReply HandleButtonClicked(uint32 Position);
 };

@@ -22,7 +22,7 @@ void SMineSweeperWindow::Construct(const FArguments& InArgs)
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot() // The buttons row
-			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(5.f)
+			  .HAlign(HAlign_Center).VAlign(VAlign_Top).AutoHeight().Padding(20.f)
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
@@ -144,10 +144,6 @@ void SMineSweeperWindow::ChangeGridConfig(const FVector2D& GridSize)
 	{
 		Grid->ChangeGrid(GridSize);
 		ChosenConfig = GridSize;
-	}
-	else
-	{
-		Grid->Refresh();
 	}
 }
 
